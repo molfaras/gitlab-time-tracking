@@ -10,5 +10,4 @@
   %p
     %span.light GitLab profile:
     %strong
-      %a{href: (Api::Gitlab::SERVER_URL + '/u/' + current_user.username), target: "_blank"}
-        = current_user.username
+      = link_to current_user.username, (Api::Gitlab::SERVER_URL + '/u/' + current_user.username), target: "_blank"

@@ -4,7 +4,7 @@ class TimeParser
     s: (1),
     m: (60),
     h: (60 * 60),
-    d: (60 * 60 * 24)
+    d: (60 * 60 * 8)
   }.with_indifferent_access.freeze
 
   attr_reader :time, :sign

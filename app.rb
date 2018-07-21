@@ -51,6 +51,24 @@ class GitLabTimeTracking < Sinatra::Base
     haml :index
   end
 
+  get '/project/:id' do
+    authenticate_user!
+
+    @day_to = if params[:day_to]
+      params[:day_to].to_date
+    else
+      Date.today
+    end
+
+    @day_from = @day_to - 1.week
+    @days = (@day_from..@day_to).to_a
+    @project = current_user.api.project(params[:id])
+    @time_logs = TimeLog.where(project_id: params[:id])
+      .where('day >= ? AND day <= ?', @day_from, @day_to)
+
+    haml :project
+  end
+
   get '/profile' do
     authenticate_user!
 

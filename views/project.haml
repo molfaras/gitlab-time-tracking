@@ -38,15 +38,13 @@
   }
 
 %h2
-  Dashboard
-  .pull-right
-    = link_to 'Log time', 'log_time', class: 'btn btn-success btn-sm'
+  = @project.name_with_namespace
 %p
-  = link_to '&larr; Prev', '/?day_to=' + (@day_to - 1.week).to_s, class: 'btn btn-xs btn-default'
+  = link_to '&larr; Prev', "/project/#{@project.id}?day_to=" + (@day_to - 1.week).to_s, class: 'btn btn-xs btn-default'
   &nbsp;
   From #{@day_from.strftime("%b %d")} to #{@day_to.strftime("%b %d")}.
   &nbsp;
-  = link_to 'Next &rarr;', '/?day_to=' + (@day_to + 1.week).to_s, class: 'btn btn-xs btn-default'
+  = link_to 'Next &rarr;', "/project/#{@project.id}?day_to=" + (@day_to + 1.week).to_s, class: 'btn btn-xs btn-default'
 
 %table.table.table-striped.table-bordered
   %thead
@@ -61,22 +59,23 @@
           = date.strftime("%a")
 
   %tbody
-    - @time_logs.group_by(&:project_id).each do |project_logs|
-      - project = current_user.api.project(project_logs[0])
+    - @time_logs.group_by(&:user_id).each do |user_logs|
+      - user = current_user.api.user(user_logs[0])
       %tr
         %td
-          %strong #{link_to project.name_with_namespace, "project/#{project.id}"}
+          %strong
+            = link_to user.username, (Api::Gitlab::SERVER_URL + '/u/' + user.username), target: "_blank"
         - @days.each do |date|
           %td.clight
-            - time = project_logs[1].inject(0) { |sum, x| sum + (x.day == date ? x.time : 0) }
+            - time = user_logs[1].inject(0) { |sum, x| sum + (x.day == date ? x.time : 0) }
             - unless time.zero?
               = time.round(2)
 
-      - project_logs[1].group_by(&:issue_iid).each do |logs|
+      - user_logs[1].group_by(&:issue_iid).each do |logs|
         %tr
           %td
-            &nbsp; #{link_to "#" + logs[0].to_s, issue_url(project, logs[0])}
-            #{current_user.api.issue(project.id, logs[0]).title}
+            &nbsp; #{link_to "#" + logs[0].to_s, issue_url(@project, logs[0])}
+            #{current_user.api.issue(@project.id, logs[0]).title}
           - @days.each do |date|
             %td
               - time = logs[1].inject(0) { |sum, x| sum + (x.day == date ? x.time : 0) }
