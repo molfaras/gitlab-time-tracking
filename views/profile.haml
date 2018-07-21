@@ -2,9 +2,6 @@
 %h3
   Hi, #{current_user.name}
 
-  - if current_user.is_admin
-    %span.label.label-success Admin
-
 .profile-block
   %p
     %span.light Email:
@@ -13,5 +10,5 @@
   %p
     %span.light GitLab profile:
     %strong
-      %a{href: (current_user.url + '/u/' + current_user.username), target: "_blank"}
+      %a{href: (Api::Gitlab::SERVER_URL + '/u/' + current_user.username), target: "_blank"}
         = current_user.username

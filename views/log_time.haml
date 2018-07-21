@@ -3,29 +3,36 @@
     .col-sm-offset-2.col-sm-10
       %h2
         Log time
+  - if @errors
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        .alert.alert-danger
+          - @errors.each do |error|
+            = error
+            %br
   .form-group
-    %label.col-sm-2.control-label Time
+    %label.col-sm-2.control-label Time *
     .col-sm-10
-      %input.form-control{name: "time_log[time]", type: "text"}/
-      .help-block In hours
+      %input.form-control{name: "time_log[time]", type: "text", placeholder: 'e.g. 1h 10m'}/
   .form-group
-    %label.col-sm-2.control-label Day
+    %label.col-sm-2.control-label Day *
     .col-sm-10
       %input#datepicker.form-control{name: "time_log[day]", type: "text", value: Date.today}/
   .form-group
-    %label.col-sm-2.control-label Issue iid
+    %label.col-sm-2.control-label Issue *
     .col-sm-10
-      %input.form-control{name: "time_log[issue_iid]", type: "number"}/
+      %input.form-control{name: "time_log[issue_iid]", type: "number", placeholder: 'e.g. 110'}/
   .form-group
-    %label.col-sm-2.control-label Project ID
+    %label.col-sm-2.control-label Project *
     .col-sm-10
       %select.form-control{name: "time_log[project_id]"}
         - @projects.each do |project|
-          %option{value: project.id}= project.name_with_namespace
+          %option{value: project.id, selected: project.id == 114}= project.name_with_namespace
+      .help-block Only starred projects are listed here.
   .form-group
     %label.col-sm-2.control-label Comment
     .col-sm-10
-      %input.form-control{name: "time_log[comment]", type: "text"}/
+      ~ "<textarea class='form-control' name='time_log[comment]' type='text' rows=3></textarea>"
   .form-group
     .col-sm-offset-2.col-sm-10
       %input.btn.btn-success{name: "commit", type: "submit", value: "Log time"}/

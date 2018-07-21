@@ -12,17 +12,8 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 20140511101738) do
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "projects", force: true do |t|
-    t.integer  "gitlab_id"
-    t.string   "gitlab_url"
-    t.string   "gitlab_name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "time_logs", force: true do |t|
     t.float    "time"
@@ -34,5 +25,4 @@ ActiveRecord::Schema.define(version: 20140511101738) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
 end

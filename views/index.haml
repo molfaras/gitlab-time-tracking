@@ -1,3 +1,42 @@
+:css
+  /* Tooltip container */
+  .custom-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    opacity: 0.88;
+    overflow: visible;
+  }
+
+  /* Tooltip text */
+  .custom-tooltip .tooltip-text {
+    visibility: hidden;
+    display: table;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 110%;
+  }
+
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+  }
+
+  ul.tooltip-list {
+    text-align: left;
+    padding: 0 0 0 20px;
+    margin-bottom: 0px;
+  }
+
 %h2
   Dashboard
   .pull-right
@@ -23,7 +62,7 @@
 
   %tbody
     - @time_logs.group_by(&:project_id).each do |project_logs|
-      - project = current_user.project(project_logs[0])
+      - project = current_user.api.project(project_logs[0])
       %tr
         %td
           %strong #{project.name_with_namespace}
@@ -31,21 +70,29 @@
           %td.clight
             - time = project_logs[1].inject(0) { |sum, x| sum + (x.day == date ? x.time : 0) }
             - unless time.zero?
-              = time
+              = time.round(2)
 
       - project_logs[1].group_by(&:issue_iid).each do |logs|
         %tr
           %td
-            &nbsp; Issue #{link_to "#" + logs[0].to_s, issue_url(project, logs[0])}
+            &nbsp; #{link_to "#" + logs[0].to_s, issue_url(project, logs[0])}
+            #{current_user.api.issue(project.id, logs[0]).title}
           - @days.each do |date|
             %td
               - time = logs[1].inject(0) { |sum, x| sum + (x.day == date ? x.time : 0) }
               - unless time.zero?
-                = time
+                .custom-tooltip
+                  = time.round(2)
+                  %span.tooltip-text
+                    %ul.tooltip-list
+                      - logs[1].select { |x| x.day == date }.each do |log|
+                        - if log.comment.present?
+                          %li
+                            = log.comment
     %tr
       %td
         %strong Total
       - @days.each do |date|
         %td
           %strong
-            = @time_logs.where(day: date).sum(:time)
+            = @time_logs.where(day: date).sum(:time).round(2)

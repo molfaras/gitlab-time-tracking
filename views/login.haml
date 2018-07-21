@@ -8,18 +8,14 @@
         .alert.alert-danger
           = @error
   .form-group
-    %label.col-sm-2.control-label Login or Email
+    %label.col-sm-2.control-label Private Token
     .col-sm-10
-      %input#user_session_email.form-control{name: "user_session[email]", type: "text", required: true}/
-  .form-group
-    %label.col-sm-2.control-label Password
-    .col-sm-10
-      %input#user_session_password.form-control{name: "user_session[password]", type: "password", required: true}/
+      %input#user_session_password.form-control{name: "user_session[private_token]", type: "password", required: true}/
   .form-group
     %label.col-sm-2.control-label GitLab url
     .col-sm-10
-      - if GITLAB_SERVER
-        %input#user_session_url.form-control{name: "user_session[url]", type: "text", placeholder: "https://gitlab.com/", disabled: true, value: GITLAB_SERVER}/
+      - if Api::Gitlab::SERVER_URL
+        %input#user_session_url.form-control{name: "user_session[url]", type: "text", placeholder: "https://gitlab.com/", disabled: true, value: Api::Gitlab::SERVER_URL}/
       - else
         %input#user_session_url.form-control{name: "user_session[url]", type: "text", placeholder: "https://gitlab.com/", required: true}/
   .form-group

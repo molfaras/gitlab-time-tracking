@@ -1,9 +1,7 @@
 APP_ROOT = File.dirname(__FILE__)
 SECRET = File.join(APP_ROOT, '.secret')
 
-# Change this to restrict login with one instance
-GITLAB_SERVER = nil# Ex. 'http://demo.gitlab.com'
-
+require 'pry' if ENV['RACK_ENV'] = 'development'
 require 'rubygems'
 require 'sinatra/base'
 require "sinatra/reloader"
@@ -28,6 +26,10 @@ class GitLabTimeTracking < Sinatra::Base
   set :database_file, "#{APP_ROOT}/config/database.yml"
 
   require 'sinatra/activerecord'
+  require './api/gitlab'
+  require './lib/time_note'
+  require './lib/time_parser'
+  require './helpers/authentication_helper'
   require './helpers/render_partial'
   require './models/user'
   require './models/time_log'
@@ -42,8 +44,9 @@ class GitLabTimeTracking < Sinatra::Base
               end
 
     @day_from = @day_to - 1.week
-    @time_logs = TimeLog.where(user_id: current_user.id).where("day >= ? AND day <= ?", @day_from, @day_to)
     @days = (@day_from..@day_to).to_a
+    @time_logs = TimeLog.where(user_id: current_user.id)
+                        .where('day >= ? AND day <= ?', @day_from, @day_to)
 
     haml :index
   end
@@ -82,7 +85,7 @@ class GitLabTimeTracking < Sinatra::Base
   get '/log_time' do
     authenticate_user!
 
-    @projects = current_user.projects
+    @projects = current_user.api.projects
 
     haml :log_time
   end
@@ -92,14 +95,23 @@ class GitLabTimeTracking < Sinatra::Base
 
     time_log = TimeLog.new(params['time_log'])
     time_log.user_id = current_user.id
+    time_log.time = TimeParser.new(params.dig('time_log', 'time')).to_h
 
     if time_log.save
+      begin
+        current_user.api.log_time(**params['time_log'].symbolize_keys)
+      rescue Gitlab::Error::BadRequest
+        nil
+      end
+
       redirect '/'
     else
+      @projects = current_user.api.projects
+      @errors = time_log.errors.full_messages
+
       haml :log_time
     end
   end
-
 
   helpers do
     def current_user

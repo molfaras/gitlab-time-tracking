@@ -22,6 +22,12 @@ gem 'gitlab'
 # Web server
 gem 'unicorn'
 
+group :development do
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug', platform: :mri
+  gem 'pry-byebug'
+end
+
 group :test do
   gem 'rspec'
   gem 'capybara'
