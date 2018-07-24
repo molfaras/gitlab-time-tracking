@@ -11,18 +11,6 @@
             = error
             %br
   .form-group
-    %label.col-sm-2.control-label Time *
-    .col-sm-10
-      %input.form-control{name: "time_log[time]", type: "text", placeholder: 'e.g. 1h 10m'}/
-  .form-group
-    %label.col-sm-2.control-label Day *
-    .col-sm-10
-      %input#datepicker.form-control{name: "time_log[day]", type: "text", value: Date.today}/
-  .form-group
-    %label.col-sm-2.control-label Issue *
-    .col-sm-10
-      %input.form-control{name: "time_log[issue_iid]", type: "number", placeholder: 'e.g. 110'}/
-  .form-group
     %label.col-sm-2.control-label Project *
     .col-sm-10
       %select.form-control{name: "time_log[project_id]"}
@@ -30,9 +18,25 @@
           %option{value: project.id, selected: project.id == 114}= project.name_with_namespace
       .help-block Only starred projects are listed here.
   .form-group
+    %label.col-sm-2.control-label Issue *
+    .col-sm-10
+      %input.form-control{name: "time_log[issue_iid]", type: "number", placeholder: 'e.g. 110'}/
+  .form-group
+    %label.col-sm-2.control-label Day *
+    .col-sm-10
+      %input#datepicker.form-control{name: "time_log[day]", type: "text", value: Date.today}/
+  .form-group
+    %label.col-sm-2.control-label Time *
+    .col-sm-10
+      %input.form-control{name: "time_log[time]", type: "text", placeholder: 'e.g. 1h 10m'}/
+  .form-group
     %label.col-sm-2.control-label Comment
     .col-sm-10
       ~ "<textarea class='form-control' name='time_log[comment]' type='text' rows=3></textarea>"
+  .form-group
+    .col-sm-10.col-sm-offset-2
+      %input{name: "time_log[push_to_gitlab]", type: "checkbox", checked: true}/
+      %label * Push to Gitlab
   .form-group
     .col-sm-offset-2.col-sm-10
       %input.btn.btn-success{name: "commit", type: "submit", value: "Log time"}/

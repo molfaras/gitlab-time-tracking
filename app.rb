@@ -111,13 +111,17 @@ class GitLabTimeTracking < Sinatra::Base
   post '/create_time_log' do
     authenticate_user!
 
-    time_log = TimeLog.new(params['time_log'])
-    time_log.user_id = current_user.id
-    time_log.time = TimeParser.new(params.dig('time_log', 'time')).to_h
+    log_time_params = params['time_log'].slice(*Api::Gitlab::LOG_TIME_ATTRIBUTES).symbolize_keys
+    time_log_params = params['time_log'].slice(*TimeLog::ATTRIBUTES)
+
+    time_log_params['user_id'] = current_user.id
+    time_log_params['time'] = TimeParser.new(time_log_params['time']).to_h
+
+    time_log = TimeLog.new(time_log_params)
 
     if time_log.save
       begin
-        current_user.api.log_time(**params['time_log'].symbolize_keys)
+        current_user.api.log_time(**log_time_params) if params.dig('time_log', 'push_to_gitlab')
       rescue Gitlab::Error::BadRequest
         nil
       end

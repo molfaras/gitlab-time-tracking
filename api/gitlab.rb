@@ -1,6 +1,7 @@
 module Api
   class Gitlab
     # Change this to restrict login with one instance
+    LOG_TIME_ATTRIBUTES = %w[project_id issue_iid time day comment].freeze
     SERVER_URL = ENV['GITLAB_SERVER']
     API_VERSION = '/api/v4'
     DEFAULT_PER_PAGE = 100
