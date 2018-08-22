@@ -39,6 +39,8 @@
 
 %h2
   = @project.name_with_namespace
+  .pull-right
+    = link_to 'Log time', '/log_time', class: 'btn btn-success btn-sm'
 %p
   = link_to '&larr; Prev', "/project/#{@project.id}?day_to=" + (@day_to - 1.week).to_s, class: 'btn btn-xs btn-default'
   &nbsp;
