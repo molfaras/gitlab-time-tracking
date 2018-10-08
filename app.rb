@@ -43,7 +43,12 @@ class GitLabTimeTracking < Sinatra::Base
                 Date.today
               end
 
-    @day_from = @day_to - 1.week
+    @day_from = if params[:day_from]
+                  params[:day_from].to_date
+                else
+                  @day_to - 1.week
+                end
+
     @days = (@day_from..@day_to).to_a
     @time_logs = TimeLog.where(user_id: current_user.id)
                         .where('day >= ? AND day <= ?', @day_from, @day_to)
@@ -55,12 +60,17 @@ class GitLabTimeTracking < Sinatra::Base
     authenticate_user!
 
     @day_to = if params[:day_to]
-      params[:day_to].to_date
-    else
-      Date.today
-    end
+                params[:day_to].to_date
+              else
+                Date.today
+              end
 
-    @day_from = @day_to - 1.week
+    @day_from = if params[:day_from]
+                  params[:day_from].to_date
+                else
+                  @day_to - 1.week
+                end
+
     @days = (@day_from..@day_to).to_a
     @project = current_user.api.project(params[:id])
     @time_logs = TimeLog.where(project_id: params[:id])
